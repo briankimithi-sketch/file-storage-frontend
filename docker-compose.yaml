@@ -1,0 +1,27 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    volumes:
+      - ./192.168.100.85+3.pem:/etc/nginx/certs/cert.pem:ro
+      - ./192.168.100.85+3-key.pem:/etc/nginx/certs/key.pem:ro
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=production
+
+  backend:
+    # REPLACE THIS with your actual backend Docker image
+    # Example: image: myregistry.com/file-storage-backend:v1.0.0
+    # Or build from local Dockerfile: build: ../file-storage-backend
+    image: your-backend-image:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - KEYCLOAK_URL=https://keycloakuat.abcthebank.com:8099
+      - KEYCLOAK_REALM=FileStorage
+      - KEYCLOAK_CLIENT_ID=file-storage-backend

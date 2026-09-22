@@ -1,17 +1,33 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import fs from "fs";
 
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,        // listen on all interfaces (LAN + localhost)
-    port: 5173,        // default dev port
+    host: true,
+    port: 5173,
+    https: {
+      key: fs.readFileSync("./192.168.100.85+3-key.pem"),
+      cert: fs.readFileSync("./192.168.100.85+3.pem"),
+    },
     proxy: {
-      // forward API calls to backend
-      '/files': 'http://localhost:8080',
-      '/public/api/v1': 'http://localhost:8080',
-      '/swagger-ui': 'http://localhost:8080',
-      '/v3/api-docs': 'http://localhost:8080'
-    }
-  }
+      "/files": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      "/public/api/v1": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      "/swagger-ui": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      "/v3/api-docs": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+    },
+  },
 });
