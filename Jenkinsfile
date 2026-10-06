@@ -185,17 +185,23 @@ pipeline {
 
                     echo "=== Frontend HTTP health check ==="
 
-                    curl -fsS \
-                        "http://localhost:$FRONTEND_PORT" \
+                    docker run --rm \
+                        --add-host host.docker.internal:host-gateway \
+                        curlimages/curl:8.10.1 \
+                        -fsS \
+                        "http://host.docker.internal:$FRONTEND_PORT" \
                         >/dev/null
 
                     echo "Frontend HTTP health check passed."
 
                     echo "=== Backend proxy health check ==="
 
-                    HTTP_STATUS=$(curl -s -o /dev/null \
+                    HTTP_STATUS=$(docker run --rm \
+                        --add-host host.docker.internal:host-gateway \
+                        curlimages/curl:8.10.1 \
+                        -s -o /dev/null \
                         -w "%{http_code}" \
-                        "http://localhost:$FRONTEND_PORT/files")
+                        "http://host.docker.internal:$FRONTEND_PORT/files")
 
                     if [ "$HTTP_STATUS" = "401" ]; then
                         echo "Backend proxy is working."
