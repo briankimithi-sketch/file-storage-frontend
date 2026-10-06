@@ -1,6 +1,7 @@
 pipeline {
     agent {
         node {
+            label 'built-in'
             customWorkspace '/home/brian.kimithi/jenkins-workspace/file-storage-frontend'
         }
     }
